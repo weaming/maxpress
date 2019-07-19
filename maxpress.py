@@ -57,7 +57,7 @@ def log(*args, **kw):
 
 
 # 处理配置文件
-def import_config(file=join_path(ROOT, "config.json")):
+def import_config(file=config_path):
     with open(file, encoding="utf-8") as json_file:
         text = json_file.read()
         json_text = re.search(r"\{[\s\S]*\}", text).group()  # 去除json文件中的注释
