@@ -1,11 +1,11 @@
-# Created by .ignore support plugin (hsz.mobi)
-
 .DS_Store
 __pycache__/
 .idea
+*.py[cod]
 /bin
 build/
 dist/
 *.spec
 *.exe
 result/
+.idea/
