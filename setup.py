@@ -1,6 +1,6 @@
 # coding: utf-8
 # Always prefer setuptools over distutils
-from setuptools import setup, find_packages
+from setuptools import setup
 import os
 import re
 
@@ -36,16 +36,13 @@ gh_repo = "https://github.com/weaming/{}".format(name)
 
 setup(
     name=name,  # Required
-    version="0.1",
+    version="0.2",
     # This is a one-line description or tagline of what your project does.
     description="convert markdown wechat html. 转换Markdown文章为公众号可粘贴的HTML格式.",  # Required
     long_description=long_description,  # Optional
     long_description_content_type="text/markdown",  # Optional
     install_requires=install_requires,
-    # You can use `find_packages()` or the `py_modules` argument which expect a
     py_modules=["maxpress"],
-    # single python file
-    packages=find_packages(exclude=["contrib", "docs", "tests"]),  # Required
     entry_points={"console_scripts": ["maxpress=maxpress:main"]},  # Optional
     url=gh_repo,  # Optional
     author="weaming",  # Optional

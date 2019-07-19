@@ -10,6 +10,46 @@ import premailer, lesscpy
 
 
 ROOT = os.getenv("ROOT") or os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.expandvars("$HOME/.config/maxpress/config.json")
+default_config = {
+    "main_size": "16px",
+    "main_margin": "3%",
+    "line_height": "1.8em",
+    "para_spacing": "1.5em",
+    "text_color": "#555",
+    "theme_color": "#349971",
+    "quote_color": "#999",
+    "align": {
+        "h1": "left",
+        "h2": "left",
+        "h3": "center",
+        "h4": "center",
+        "h5": "center",
+        "h6": "center",
+        "content": "left",
+    },
+    "banner_url": "",
+    "poster_url": "",
+    "convert_list": True,
+    "ul_style": "○",
+    "auto_archive": False,
+    "auto_rename": False,
+}
+
+
+def prepare_dir(path):
+    path = os.path.abspath(path)
+    if not path.endswith("/"):
+        path = os.path.dirname(path) or "."
+
+    if not os.path.isdir(path):
+        os.makedirs(path)
+
+
+if not os.path.isfile(config_path):
+    prepare_dir(config_path)
+    with open(config_path, "w") as f:
+        f.write(json.dumps(default_config, ensure_ascii=False, indent=2))
 
 
 def log(*args, **kw):
@@ -253,6 +293,7 @@ def convert_file(file, filepath, dst, config, styles, archive=False):
     htmlpath = join_path(dst, file[:-3] + ".html")
     if config["auto_rename"]:
         htmlpath = autoname(htmlpath)
+    prepare_dir(htmlpath)
     with open(htmlpath, "w", encoding="utf-8") as html_file:
         html_file.write(result)
     log("转换成功[{}]".format(htmlpath.split("/")[-1]))
@@ -265,6 +306,7 @@ def convert_file(file, filepath, dst, config, styles, archive=False):
         archpath = join_path(arch_dir, file)
         if config["auto_rename"]:
             archpath = autoname(archpath)
+        prepare_dir(archpath)
         shutil.move(filepath, archpath)
         log("存档成功[{}]".format(archpath.split("/")[-1]))
         return archpath
