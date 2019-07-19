@@ -36,7 +36,7 @@
   "poster_url": "",
   "convert_list": true,
   "ul_style": "○",
-  "auto_archive": true,
+  "auto_archive": false,
   "auto_rename": false
 }
 

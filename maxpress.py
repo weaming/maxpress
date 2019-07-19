@@ -1,11 +1,19 @@
-from mistune import Markdown
-from six import StringIO
-import premailer, lesscpy
+#!/usr/bin/env python3
+import sys
+import argparse
 import os, re, json, shutil
 from os.path import join as join_path
 
+from six import StringIO
+from mistune import Markdown
+import premailer, lesscpy
+
 
 ROOT = os.getenv("ROOT") or os.path.dirname(os.path.abspath(__file__))
+
+
+def log(*args, **kw):
+    print(*args, file=sys.stderr, **kw)
 
 
 # 处理配置文件
@@ -148,7 +156,7 @@ def report_error(func):
             result = func(*args, **kwargs)
             return result
         except Exception as e:
-            print("错误: {}".format(e))
+            log("错误: {}".format(e))
             input("提示：运行前请将所有要转换的Markdown文档放入temp目录中\n" "请按回车键退出程序：")
 
     return wrapper
@@ -189,7 +197,7 @@ def convert_all(
     archive=None,
     styles=None,
 ):  # 通过styles参数传入css文件名列表时，默认样式将失效
-    config, styles = load_config_and_css(archive, styles)
+    config, styles = load_config_and_css(styles)
     if archive is None:
         archive = config["auto_archive"]
 
@@ -212,26 +220,26 @@ def convert_all(
             except:
                 pass
 
-    print("\n[+] 请进入result／html查看所有生成的HTML文档")
-    print("[+] 请进入result／archive查看所有存档的MarkDown文档")
+    log("\n[+] 请进入result／html查看所有生成的HTML文档")
+    log("[+] 请进入result／archive查看所有存档的MarkDown文档")
 
 
-def load_config_and_css(archive, styles):
-    print("[+] 正在导入配置文件...", end=" ")
+def load_config_and_css(styles):
+    log("[+] 正在导入配置文件...", end=" ")
     config = import_config()
-    print("导入成功")
+    log("导入成功")
 
     if not styles:
-        print("[+] 正在编译CSS样式表...", end=" ")
+        log("[+] 正在编译CSS样式表...", end=" ")
         compile_styles()
-        print("编译成功")
+        log("编译成功")
     elif isinstance(styles, str):
         styles = [styles]
     return config, styles
 
 
 def convert_file(file, filepath, dst, config, styles, archive=False):
-    print("[+] 正在转换{}...".format(file), end=" ")
+    log("[+] 正在转换{}...".format(file), end=" ")
     with open(filepath, encoding="utf-8") as md_file:
         text = md_file.read()
     result = md2html(
@@ -247,10 +255,10 @@ def convert_file(file, filepath, dst, config, styles, archive=False):
         htmlpath = autoname(htmlpath)
     with open(htmlpath, "w", encoding="utf-8") as html_file:
         html_file.write(result)
-    print("转换成功[{}]".format(htmlpath.split("/")[-1]))
+    log("转换成功[{}]".format(htmlpath.split("/")[-1]))
 
     if archive:
-        print("[+] 正在存档{}...".format(file), end=" ")
+        log("[+] 正在存档{}...".format(file), end=" ")
         arch_dir = join_path(ROOT, "result", "archive")
         if not os.path.exists(arch_dir):
             os.mkdir(arch_dir)
@@ -258,12 +266,34 @@ def convert_file(file, filepath, dst, config, styles, archive=False):
         if config["auto_rename"]:
             archpath = autoname(archpath)
         shutil.move(filepath, archpath)
-        print("存档成功[{}]".format(archpath.split("/")[-1]))
+        log("存档成功[{}]".format(archpath.split("/")[-1]))
+        return archpath
+    return htmlpath
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-a", "--all", action='store_true', help="convert all *.md under source directory")
+    parser.add_argument("--archive", action='store_true', help="archive markdown after convert")
+    parser.add_argument("--src", default=join_path(ROOT, "temp"), help="source directory or file")
+    parser.add_argument("--dst", default=join_path(ROOT, "result", "html"), help="destination directory")
+    parser.add_argument("--styles", nargs='*', help="css file path")
+    args = parser.parse_args()
+
+    if args.all:
+        convert_all(src=args.src, dst=args.dst, archive=args.archive)
+    else:
+        config, styles = load_config_and_css(args.styles)
+        archive = config["auto_archive"]
+
+        filepath = args.src
+        file = os.path.basename(filepath)
+        if os.path.isfile(filepath) and file.endswith(".md"):
+            filepath = convert_file(file, filepath, args.dst, config, styles, archive=archive)
+            print(filepath)
+            return
+        log("--src should be a *.md file")
 
 
 if __name__ == "__main__":
-    # 全部转换并存档
-    # convert_all()
-
-    # 只转换不存档
-    convert_all(archive=False)
+    main()
