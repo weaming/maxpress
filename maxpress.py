@@ -273,11 +273,23 @@ def convert_file(file, filepath, dst, config, styles, archive=False):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-a", "--all", action='store_true', help="convert all *.md under source directory")
-    parser.add_argument("--archive", action='store_true', help="archive markdown after convert")
-    parser.add_argument("--src", default=join_path(ROOT, "temp"), help="source directory or file")
-    parser.add_argument("--dst", default=join_path(ROOT, "result", "html"), help="destination directory")
-    parser.add_argument("--styles", nargs='*', help="css file path")
+    parser.add_argument(
+        "-a",
+        "--all",
+        action="store_true",
+        help="convert all *.md under source directory",
+    )
+    parser.add_argument(
+        "--archive", action="store_true", help="archive markdown after convert"
+    )
+    parser.add_argument("--stdout", action="store_true", help="print stdout")
+    parser.add_argument(
+        "--src", default=join_path(ROOT, "temp"), help="source directory or file"
+    )
+    parser.add_argument(
+        "--dst", default=join_path(ROOT, "result", "html"), help="destination directory"
+    )
+    parser.add_argument("--styles", nargs="*", help="css file path")
     args = parser.parse_args()
 
     if args.all:
@@ -289,11 +301,19 @@ def main():
         filepath = args.src
         file = os.path.basename(filepath)
         if os.path.isfile(filepath) and file.endswith(".md"):
-            filepath = convert_file(file, filepath, args.dst, config, styles, archive=archive)
-            print(filepath)
+            htmlpath = convert_file(
+                file, filepath, args.dst, config, styles, archive=archive
+            )
+            if not args.stdout:
+                print(htmlpath)
+            else:
+                with open(htmlpath) as f:
+                    print(f.read())
             return
         log("--src should be a *.md file")
 
 
 if __name__ == "__main__":
+    # ./maxpress.py --src temp/example.md 2>/dev/null | xargs open
+    # then copy & paste
     main()
