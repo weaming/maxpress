@@ -189,52 +189,13 @@ def convert_all(
     archive=None,
     styles=None,
 ):  # 通过styles参数传入css文件名列表时，默认样式将失效
-
-    print("[+] 正在导入配置文件...", end=" ")
-    config = import_config()
+    config, styles = load_config_and_css(archive, styles)
     if archive is None:
         archive = config["auto_archive"]
-    print("导入成功")
-
-    if not styles:
-        print("[+] 正在编译CSS样式表...", end=" ")
-        compile_styles()
-        print("编译成功")
-    elif isinstance(styles, str):
-        styles = [styles]
 
     for file, filepath in recursive_listdir(src):
-
         if file.endswith(".md"):
-            print("[+] 正在转换{}...".format(file), end=" ")
-            with open(filepath, encoding="utf-8") as md_file:
-                text = md_file.read()
-            result = md2html(
-                text,
-                styles,
-                poster=config["poster_url"],
-                banner=config["banner_url"],
-                convert_list=config["convert_list"],
-                ul_style=config["ul_style"],
-            )
-            htmlpath = join_path(dst, file[:-3] + ".html")
-            if config["auto_rename"]:
-                htmlpath = autoname(htmlpath)
-            with open(htmlpath, "w", encoding="utf-8") as html_file:
-                html_file.write(result)
-            print("转换成功[{}]".format(htmlpath.split("/")[-1]))
-
-            if archive:
-                print("[+] 正在存档{}...".format(file), end=" ")
-                arch_dir = join_path(ROOT, "result", "archive")
-                if not os.path.exists(arch_dir):
-                    os.mkdir(arch_dir)
-                archpath = join_path(arch_dir, file)
-                if config["auto_rename"]:
-                    archpath = autoname(archpath)
-                shutil.move(filepath, archpath)
-                print("存档成功[{}]".format(archpath.split("/")[-1]))
-
+            convert_file(file, filepath, dst, config, styles, archive=archive)
         else:
             if archive:
                 # 非.md文件统一移到src一级目录下等待手动删除，以防意外丢失
@@ -253,6 +214,51 @@ def convert_all(
 
     print("\n[+] 请进入result／html查看所有生成的HTML文档")
     print("[+] 请进入result／archive查看所有存档的MarkDown文档")
+
+
+def load_config_and_css(archive, styles):
+    print("[+] 正在导入配置文件...", end=" ")
+    config = import_config()
+    print("导入成功")
+
+    if not styles:
+        print("[+] 正在编译CSS样式表...", end=" ")
+        compile_styles()
+        print("编译成功")
+    elif isinstance(styles, str):
+        styles = [styles]
+    return config, styles
+
+
+def convert_file(file, filepath, dst, config, styles, archive=False):
+    print("[+] 正在转换{}...".format(file), end=" ")
+    with open(filepath, encoding="utf-8") as md_file:
+        text = md_file.read()
+    result = md2html(
+        text,
+        styles,
+        poster=config["poster_url"],
+        banner=config["banner_url"],
+        convert_list=config["convert_list"],
+        ul_style=config["ul_style"],
+    )
+    htmlpath = join_path(dst, file[:-3] + ".html")
+    if config["auto_rename"]:
+        htmlpath = autoname(htmlpath)
+    with open(htmlpath, "w", encoding="utf-8") as html_file:
+        html_file.write(result)
+    print("转换成功[{}]".format(htmlpath.split("/")[-1]))
+
+    if archive:
+        print("[+] 正在存档{}...".format(file), end=" ")
+        arch_dir = join_path(ROOT, "result", "archive")
+        if not os.path.exists(arch_dir):
+            os.mkdir(arch_dir)
+        archpath = join_path(arch_dir, file)
+        if config["auto_rename"]:
+            archpath = autoname(archpath)
+        shutil.move(filepath, archpath)
+        print("存档成功[{}]".format(archpath.split("/")[-1]))
 
 
 if __name__ == "__main__":
