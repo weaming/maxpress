@@ -1,11 +1,11 @@
 from mistune import Markdown
 from six import StringIO
 import premailer, lesscpy
-import sys, os, re, json, shutil
+import os, re, json, shutil
 from os.path import join as join_path
 
 
-ROOT = os.path.dirname(sys.argv[0])
+ROOT = os.getenv("ROOT") or os.path.dirname(os.path.abspath(__file__))
 
 
 # 处理配置文件
@@ -90,12 +90,12 @@ def pack_html(html, styles=None, poster="", banner=""):
         for sheet in styles
     ]
 
-    if len(poster.strip()) > 0:
+    if poster.strip():
         poster_tag = '\n<br>\n<img src="{}" alt="poster"／>'.format(poster)
     else:
         poster_tag = ""
 
-    if len(banner.strip()) > 0:
+    if banner.strip():
         banner_tag = '<img src="{}" alt="banner"／>'.format(banner)
     else:
         banner_tag = ""
@@ -156,7 +156,7 @@ def report_error(func):
 
 # 用于处理嵌套目录
 def recursive_listdir(dir):
-    for root, subdirs, files in os.walk(dir):
+    for root, _, files in os.walk(dir):
         for file in files:
             yield (file, join_path(root, file))
 
