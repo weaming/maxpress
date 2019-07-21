@@ -57,7 +57,7 @@ def log(*args, **kw):
 
 
 def get_styles_less():
-    cfg_style = os.path.expanduser("$HOME/.config/maxpress/styles.less")
+    cfg_style = os.path.expandvars("$HOME/.config/maxpress/styles.less")
     if os.path.isfile(cfg_style):
         return cfg_style
     embedded = join_path(ROOT, "less", "styles.less")
@@ -65,7 +65,7 @@ def get_styles_less():
 
 
 def get_custom_css_path():
-    css = os.path.expanduser("$HOME/.config/maxpress/custom.css")
+    css = os.path.expandvars("$HOME/.config/maxpress/custom.css")
     if os.path.isfile(css):
         return css
     return join_path(ROOT, "css", "custom.css")
