@@ -130,7 +130,13 @@ def compile_styles(file=get_default_less_path()):
 
 # 将待解析的md文档转换为适合微信编辑器的html
 def md2html(
-    text, styles=None, poster="", banner="", convert_list=True, ul_style="\u25CB"
+    text,
+    title="",
+    styles=None,
+    poster="",
+    banner="",
+    convert_list=True,
+    ul_style="\u25CB",
 ):
     md = Markdown()
 
@@ -148,11 +154,11 @@ def md2html(
         text = "\n```".join(blocks)
 
     inner_html = md(text)
-    result = premailer.transform(pack_html(inner_html, styles, poster, banner))
+    result = premailer.transform(pack_html(inner_html, title, styles, poster, banner))
     return result
 
 
-def pack_html(html, styles=None, poster="", banner=""):
+def pack_html(html, title="", styles=None, poster="", banner=""):
     if not styles:
         styles = [get_compiled_css_path()]
     styles.append(get_custom_css_path())
@@ -174,13 +180,13 @@ def pack_html(html, styles=None, poster="", banner=""):
     head = """<!DOCTYPE html><html lang="zh-cn">
           <head>
           <meta charset="UTF-8">
-          <title>result</title>
+          <title>{title}</title>
           {styles}
           </head>
           <body>
           <div class="wrapper">
           {banner}\n""".format(
-        styles="\n".join(style_tags), banner=banner_tag
+        styles="\n".join(style_tags), banner=banner_tag, title=title
     )
 
     foot = """{}\n</div>\n</body>\n</html>""".format(poster_tag)
@@ -301,10 +307,11 @@ def load_config_and_css(styles):
     return config, styles
 
 
-def convert_markdown(text, config, styles):
+def convert_markdown(text, title, config, styles):
     return md2html(
         text,
-        styles,
+        title=title,
+        styles=styles,
         poster=config["poster_url"],
         banner=config["banner_url"],
         convert_list=config["convert_list"],
@@ -312,11 +319,11 @@ def convert_markdown(text, config, styles):
     )
 
 
-def convert_file(file, filepath, dst, config, styles, archive=False):
+def convert_file(file, filepath, dst, config, styles, archive=False, title=""):
     log("[+] 正在转换{}...".format(file), end=" ")
     with open(filepath, encoding="utf-8") as md_file:
         text = md_file.read()
-    result = convert_markdown(text, config, styles)
+    result = convert_markdown(text, title or file[-3], config, styles)
 
     htmlpath = join_path(dst, file[:-3] + ".html")
     if config["auto_rename"]:
