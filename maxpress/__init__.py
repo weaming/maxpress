@@ -56,6 +56,29 @@ def log(*args, **kw):
     print(*args, file=sys.stderr, **kw)
 
 
+def get_styles_less():
+    cfg_style = os.path.expanduser("$HOME/.config/maxpress/styles.less")
+    if os.path.isfile(cfg_style):
+        return cfg_style
+    embedded = join_path(ROOT, "less", "styles.less")
+    return embedded
+
+
+def get_custom_css_path():
+    css = os.path.expanduser("$HOME/.config/maxpress/custom.css")
+    if os.path.isfile(css):
+        return css
+    return join_path(ROOT, "css", "custom.css")
+
+
+def get_compiled_css_path():
+    return join_path(ROOT, "css", "default.css")
+
+
+def get_default_less_path():
+    return join_path(ROOT, "less", "default.less")
+
+
 # 处理配置文件
 def import_config(file=config_path):
     with open(file, encoding="utf-8") as json_file:
@@ -86,22 +109,22 @@ def import_config(file=config_path):
 
     variables = "\n".join(cfg_lines) + "\n\n"
 
-    with open(join_path(ROOT, "less", "styles.less"), encoding="utf-8") as styles_file:
+    with open(get_styles_less(), encoding="utf-8") as styles_file:
         styles = styles_file.read()
-    with open(
-        join_path(ROOT, "less", "default.less"), "w", encoding="utf-8"
-    ) as default_less:
+    with open(get_default_less_path(), "w", encoding="utf-8") as default_less:
         default_less.write(variables + styles)
     return config
 
 
 # 解析less文件，生成默认样式表
-def compile_styles(file=join_path(ROOT, "less", "default.less")):
+def compile_styles(file=get_default_less_path()):
     with open(file, encoding="utf-8") as raw_file:
         raw_text = raw_file.read()
 
     css = lesscpy.compile(StringIO(raw_text))
-    with open(join_path(ROOT, "css", "default.css"), "w", encoding="utf-8") as css_file:
+    css_path = get_compiled_css_path()
+    prepare_dir(css_path)
+    with open(css_path, "w", encoding="utf-8") as css_file:
         css_file.write(css)
 
 
@@ -131,8 +154,8 @@ def md2html(
 
 def pack_html(html, styles=None, poster="", banner=""):
     if not styles:
-        styles = [join_path(ROOT, "css", "default.css")]
-    styles.append(join_path(ROOT, "css", "custom.css"))
+        styles = [get_compiled_css_path()]
+    styles.append(get_custom_css_path())
     style_tags = [
         '<link rel="stylesheet" type="text/css" href="{}">'.format(sheet)
         for sheet in styles
@@ -278,11 +301,8 @@ def load_config_and_css(styles):
     return config, styles
 
 
-def convert_file(file, filepath, dst, config, styles, archive=False):
-    log("[+] 正在转换{}...".format(file), end=" ")
-    with open(filepath, encoding="utf-8") as md_file:
-        text = md_file.read()
-    result = md2html(
+def convert_markdown(text, config, styles):
+    return md2html(
         text,
         styles,
         poster=config["poster_url"],
@@ -290,6 +310,14 @@ def convert_file(file, filepath, dst, config, styles, archive=False):
         convert_list=config["convert_list"],
         ul_style=config["ul_style"],
     )
+
+
+def convert_file(file, filepath, dst, config, styles, archive=False):
+    log("[+] 正在转换{}...".format(file), end=" ")
+    with open(filepath, encoding="utf-8") as md_file:
+        text = md_file.read()
+    result = convert_markdown(text, config, styles)
+
     htmlpath = join_path(dst, file[:-3] + ".html")
     if config["auto_rename"]:
         htmlpath = autoname(htmlpath)
@@ -348,6 +376,7 @@ def main():
             )
             if not args.stdout:
                 print(htmlpath)
+                os.system("open {}".format(htmlpath))
             else:
                 with open(htmlpath) as f:
                     print(f.read())

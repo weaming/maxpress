@@ -1,6 +1,6 @@
 # coding: utf-8
 # Always prefer setuptools over distutils
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 import re
 
@@ -42,8 +42,9 @@ setup(
     long_description=long_description,  # Optional
     long_description_content_type="text/markdown",  # Optional
     install_requires=install_requires,
-    py_modules=["maxpress"],
+    packages=find_packages(exclude=["contrib", "docs", "tests"]),  # Required
     entry_points={"console_scripts": ["maxpress=maxpress:main"]},  # Optional
+    include_package_data=True,
     url=gh_repo,  # Optional
     author="weaming",  # Optional
     author_email="garden.yuen@gmail.com",  # Optional
