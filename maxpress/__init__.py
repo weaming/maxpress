@@ -79,6 +79,10 @@ def get_default_less_path():
     return join_path(ROOT, "less", "default.less")
 
 
+def get_markdown():
+    return Markdown()
+
+
 # 处理配置文件
 def import_config(file=config_path):
     with open(file, encoding="utf-8") as json_file:
@@ -138,7 +142,7 @@ def md2html(
     convert_list=True,
     ul_style="\u25CB",
 ):
-    md = Markdown()
+    md = get_markdown()
 
     # 将markdown列表转化为带序号的普通段落（纯为适应微信中列表序号样式自动丢失的古怪现象）
     if convert_list:
