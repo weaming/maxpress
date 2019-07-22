@@ -5,6 +5,7 @@ import os, re, json, shutil
 from os.path import join as join_path
 
 from six import StringIO
+import mistune
 from mistune import Markdown
 import premailer, lesscpy
 
@@ -16,6 +17,7 @@ default_config = {
     "main_margin": "3%",
     "line_height": "1.8em",
     "para_spacing": "1.5em",
+    "list_padding_left": "2.5em",
     "text_color": "#555",
     "theme_color": "#349971",
     "quote_color": "#999",
@@ -35,6 +37,7 @@ default_config = {
     "auto_archive": False,
     "auto_rename": False,
 }
+export = {"markdown": Markdown()}
 
 
 def prepare_dir(path):
@@ -77,10 +80,6 @@ def get_compiled_css_path():
 
 def get_default_less_path():
     return join_path(ROOT, "less", "default.less")
-
-
-def get_markdown():
-    return Markdown()
 
 
 # 处理配置文件
@@ -132,6 +131,21 @@ def compile_styles(file=get_default_less_path()):
         css_file.write(css)
 
 
+def patch_mistune(MD):
+    MD.block.default_rules = sorted(
+        MD.block.default_rules,
+        key=lambda x: -1 if x == "list_block" else MD.block.default_rules.index(x),
+    )
+    MD.block.list_rules = sorted(
+        MD.block.list_rules,
+        key=lambda x: -1 if x == "list_block" else MD.block.list_rules.index(x),
+    )
+    MD.block.footnote_rules = sorted(
+        MD.block.footnote_rules,
+        key=lambda x: -1 if x == "list_block" else MD.block.footnote_rules.index(x),
+    )
+
+
 # 将待解析的md文档转换为适合微信编辑器的html
 def md2html(
     text,
@@ -142,8 +156,6 @@ def md2html(
     convert_list=True,
     ul_style="\u25CB",
 ):
-    md = get_markdown()
-
     # 将markdown列表转化为带序号的普通段落（纯为适应微信中列表序号样式自动丢失的古怪现象）
     if convert_list:
         blocks = text.split("\n```")
@@ -157,7 +169,9 @@ def md2html(
                 continue  # 跳过代码块内部内容
         text = "\n```".join(blocks)
 
-    inner_html = md(text)
+    MD = export["markdown"]
+    patch_mistune(MD)
+    inner_html = MD(text)
     result = premailer.transform(pack_html(inner_html, title, styles, poster, banner))
     return result
 
