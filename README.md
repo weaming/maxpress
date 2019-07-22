@@ -48,12 +48,13 @@
 ## 更多自定义
 
 * 自定义 less 文件
-    * `<libroot>/maxpress/less/styles.less`
-    * `$HOME/.config/maxpress/styles.less`
-    * `--styless`: 可传入多个，这时`config.json`中用于定义样式的参数将会失效，`custom.css`将在你的全部自定义样式表之后引入
+  * `<libroot>/maxpress/less/styles.less`
+  * `$HOME/.config/maxpress/styles.less`
+  * `--styless`: 可传入多个，这时`config.json`中用于定义样式的参数将会失效，`custom.css`将在你的全部自定义样式表之后引入
 * 如果你希望覆盖默认样式中的个别样式，可以自主编写`custom.css`，它将在`default.css`之后被引入。
-    * `<libroot>/maxpress/css/custom.css`
-    * `$HOME/.config/maxpress/custom.css`
+  * `<libroot>/maxpress/css/custom.css`
+  * `$HOME/.config/maxpress/custom.css`
+
 
 ## 使用Python脚本【推荐】
 

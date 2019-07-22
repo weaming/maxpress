@@ -5,9 +5,8 @@ import os, re, json, shutil
 from os.path import join as join_path
 
 from six import StringIO
-import mistune
-from mistune import Markdown
 import premailer, lesscpy
+from .renderer import markdown
 
 
 ROOT = os.getenv("ROOT") or os.path.dirname(os.path.abspath(__file__))
@@ -37,7 +36,7 @@ default_config = {
     "auto_archive": False,
     "auto_rename": False,
 }
-export = {"markdown": Markdown()}
+export = {"markdown": markdown}
 
 
 def prepare_dir(path):
