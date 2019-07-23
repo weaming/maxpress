@@ -9,10 +9,6 @@ def startswith(x, lst):
     return False
 
 
-class Break(Exception):
-    pass
-
-
 class MDown(mistune.Markdown):
     def pop(self):
         if not hasattr(self, "list_depth"):
@@ -25,6 +21,7 @@ class MDown(mistune.Markdown):
         elif self.token["type"] == "list_end":
             self.list_depth -= 1
 
+        print("-" * self.list_depth, rv)
         return rv
 
     def output_list(self):
@@ -43,15 +40,26 @@ class MDown(mistune.Markdown):
         assert depth >= 0
         while True:
             token = self.pop()
-            if depth - 1 == self.list_depth:
-                break
-            elif token["type"] == "list_item_end":
+            # if not token:
+            #     break
+
+            if token["type"] == "list_item_end":
+                # do not break for outter loop
                 break
             else:
                 if self.token["type"] == "text":
                     body += self.tok_text()
                 else:
                     body += self.tok()
+
+                # 递归出栈条件
+                # if depth - 1 == self.list_depth:  # list_end
+                #     break
+                # else:
+                #     if self.token["type"] == "text":
+                #         body += self.tok_text()
+                #     else:
+                #         body += self.tok()
 
         return self.renderer.list_item(body)
 
