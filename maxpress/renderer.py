@@ -40,6 +40,9 @@ class MDown(mistune.Markdown):
 
 
 class MRender(mistune.Renderer, PanguRendererMixin):
+    def emojize(self, text):
+        return text
+
     def text(self, text):
         if self.options.get("parse_block_html"):
             rv = text
@@ -53,7 +56,7 @@ class MRender(mistune.Renderer, PanguRendererMixin):
             )
         else:
             rv = mistune.escape(text)
-        return rv
+        return self.emojize(rv)
 
     def list_item(self, text, depth=None):
         if depth is not None:

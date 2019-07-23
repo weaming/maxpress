@@ -36,7 +36,7 @@ gh_repo = "https://github.com/weaming/{}".format(name)
 
 setup(
     name=name,  # Required
-    version="0.2.5",
+    version="0.2.6",
     # This is a one-line description or tagline of what your project does.
     description="convert markdown wechat html. 转换Markdown文章为公众号可粘贴的HTML格式.",  # Required
     long_description=long_description,  # Optional
