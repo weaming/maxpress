@@ -21,22 +21,22 @@
 
 包括：
 
-| 变量名 | 默认值 | 说明 |
-| :----- | :----- | :---- |
-|main_size     |16px   |正文主字号|
-|theme_color   |#349971|主题色，用于标题、强调元素等文字颜色|
-|text_color    |#555   |正文文字颜色|
-|quote_color   |#999   |引用框和代码框内文字颜色|
-|line_height   |2em    |正文行高|
-|para_spacing  |1.5em  |正文段间距|
-|align         |多项    |各部分的水平对齐方式，建议`left`或`center`（`h1`～`h6`代表标题1～标题6，`content`代表正文）|
-|main_margin   |3%     |内容两侧留白比例|
-|banner_url    |""     |文章头部引导关注图片的url|
-|poster_url    |""     |底部二维码／海报图片的地址|
-|convert_list  |true   |将正文中的列表转换为普通段落，以修正微信不能正常显示列表序号样式的问题（仅用于微信）|
-|ul_style      |"○"    |将无序列表转换为普通段落后，每项之前的符号标识（仅当`convert_list`为`true`时启用）|
-|auto_archive  |""     |是否自动存档（转换后将原始`.md`文件移动至`result／archive`目录下）|
-|auto_rename   |false  |冲突文件名的处理：`true`自动重命名；`false`覆盖先前的文件|
+| 变量名       | 默认值  | 说明                                                                                        |
+| :-----       | :-----  | :----                                                                                       |
+| main_size    | 16px    | 正文主字号                                                                                  |
+| theme_color  | #349971 | 主题色，用于标题、强调元素等文字颜色                                                        |
+| text_color   | #555    | 正文文字颜色                                                                                |
+| quote_color  | #999    | 引用框和代码框内文字颜色                                                                    |
+| line_height  | 2em     | 正文行高                                                                                    |
+| para_spacing | 1.5em   | 正文段间距                                                                                  |
+| align        | 多项    | 各部分的水平对齐方式，建议`left`或`center`（`h1`～`h6`代表标题1～标题6，`content`代表正文） |
+| main_margin  | 3%      | 内容两侧留白比例                                                                            |
+| banner_url   | ""      | 文章头部引导关注图片的url                                                                   |
+| poster_url   | ""      | 底部二维码／海报图片的地址                                                                  |
+| convert_list | true    | 将正文中的列表转换为普通段落，以修正微信不能正常显示列表序号样式的问题（仅用于微信）        |
+| ul_style     | "○"     | 将无序列表转换为普通段落后，每项之前的符号标识（仅当`convert_list`为`true`时启用）          |
+| auto_archive | ""      | 是否自动存档（转换后将原始`.md`文件移动至`result／archive`目录下）                          |
+| auto_rename  | false   | 冲突文件名的处理：`true`自动重命名；`false`覆盖先前的文件                                   |
 
 
 **备注：**
@@ -54,6 +54,9 @@
 * 如果你希望覆盖默认样式中的个别样式，可以自主编写`custom.css`，它将在`default.css`之后被引入。
   * `<libroot>/maxpress/css/custom.css`
   * `$HOME/.config/maxpress/custom.css`
+* 自定义高亮 CSS
+  * [`HIGHLIGHT_CSS_NAME`)[https://github.com/richleland/pygments-css]，默认 `autumn`
+  * `HIGHLIGHT_CSS_URL` 将覆盖上面 `HIGHLIGHT_CSS_NAME` 的配置
 
 
 ## 使用Python脚本【推荐】
@@ -77,7 +80,7 @@
 
 或者作为模块导入：
 
-```
+```python
 import maxpress
 
 maxpress.convert_all(archive=True, styles=None)

@@ -58,6 +58,11 @@ def log(*args, **kw):
     print(*args, file=sys.stderr, **kw)
 
 
+highlight_css_name = os.getenv("HIGHLIGHT_CSS_NAME", "autumn")
+default_highlight_css = f"https://raw.githubusercontent.com/richleland/pygments-css/master/{highlight_css_name}.css"
+highlight_css = os.getenv("HIGHLIGHT_CSS_URL") or default_highlight_css
+
+
 def get_styles_less():
     cfg_style = os.path.expandvars("$HOME/.config/maxpress/styles.less")
     if os.path.isfile(cfg_style):
@@ -177,7 +182,7 @@ def md2html(
 
 def pack_html(html, title="", styles=None, poster="", banner=""):
     if not styles:
-        styles = [get_compiled_css_path()]
+        styles = [get_compiled_css_path(), highlight_css]
     styles.append(get_custom_css_path())
     style_tags = [
         '<link rel="stylesheet" type="text/css" href="{}">'.format(sheet)

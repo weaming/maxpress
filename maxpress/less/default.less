@@ -265,3 +265,22 @@ a{
   color: @theme_color;
   text-decoration: none;
 }
+
+/* highlight */
+.highlight {
+  margin: @para_spacing @main_margin !important;
+  line-height: @line_height;
+  font-size: @main_size - 2px !important;
+  color: @quote_color;
+  white-space: pre;
+  overflow: auto;
+  padding: 3px 8px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  display: block !important;
+  margin: auto @main_margin !important;
+  background: white!important;
+}
+.highlight > pre {
+  margin: 0
+}

@@ -221,3 +221,20 @@ a {
  color: #349971;
  text-decoration: none;
 }
+.highlight {
+ margin: 1.5em 3% !important;
+ line-height: 1.8em;
+ font-size: 14px !important;
+ color: #999999;
+ white-space: pre;
+ overflow: auto;
+ padding: 3px 8px;
+ border: 1px solid #dddddd;
+ border-radius: 3px;
+ display: block !important;
+ margin: auto 3% !important;
+ background: white !important;
+}
+.highlight > pre {
+ margin: 0;
+}
