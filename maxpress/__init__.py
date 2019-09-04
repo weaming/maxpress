@@ -298,7 +298,8 @@ def convert_all(src=join_path(LIB_ROOT, "temp"), dst=None, archive=None, styles=
             # convert_file(file, filepath, dst, config, styles, archive=archive)
             # mistune is not threadsafe
             param = dict(
-                args=(file, filepath, dst, config, styles), kwargs=dict(archive=archive)
+                args=(file, filepath, dst, config, styles),
+                kwargs=dict(archive=archive, title=file[:-3]),
             )
             ps.append(param)
         else:
