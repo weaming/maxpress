@@ -2,7 +2,7 @@
 import sys
 import argparse
 import os, re, json, shutil
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 from os.path import join as join_path
 
 from six import StringIO
@@ -272,9 +272,13 @@ def autoname(defaultpath):
 
 
 def map_do(fn, iterable, n=20):
-    with ThreadPoolExecutor(n) as executor:
+    with ProcessPoolExecutor(n) as executor:
         results = executor.map(fn, iterable)
         return results
+
+
+def _map_fn_wrapper(p):
+    convert_file(*p['args'], **p['kwargs'])
 
 
 def convert_all(src=join_path(LIB_ROOT, "temp"), dst=None, archive=None, styles=None):
@@ -305,10 +309,7 @@ def convert_all(src=join_path(LIB_ROOT, "temp"), dst=None, archive=None, styles=
             else:
                 continue
 
-    def fn(p):
-        convert_file(*p['args'], **p['kwargs'])
-
-    map_do(fn, ps)
+    map_do(_map_fn_wrapper, ps)
 
     if archive:
         # 删除src中剩余的空目录
