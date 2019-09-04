@@ -2,6 +2,7 @@
 import sys
 import argparse
 import os, re, json, shutil
+from concurrent.futures import ThreadPoolExecutor
 from os.path import join as join_path
 
 from six import StringIO
@@ -9,7 +10,9 @@ import premailer, lesscpy
 from .renderer import markdown
 
 
-ROOT = os.getenv("ROOT") or os.path.dirname(os.path.abspath(__file__))
+LIB_ROOT = os.getenv("LIB_ROOT") or os.path.dirname(os.path.abspath(__file__))
+# md 根目录
+ROOT = os.getenv("ROOT")
 config_path = os.path.expandvars("$HOME/.config/maxpress/config.json")
 default_config = {
     "main_size": "16px",
@@ -67,7 +70,7 @@ def get_styles_less():
     cfg_style = os.path.expandvars("$HOME/.config/maxpress/styles.less")
     if os.path.isfile(cfg_style):
         return cfg_style
-    embedded = join_path(ROOT, "less", "styles.less")
+    embedded = join_path(LIB_ROOT, "less", "styles.less")
     return embedded
 
 
@@ -75,15 +78,15 @@ def get_custom_css_path():
     css = os.path.expandvars("$HOME/.config/maxpress/custom.css")
     if os.path.isfile(css):
         return css
-    return join_path(ROOT, "css", "custom.css")
+    return join_path(LIB_ROOT, "css", "custom.css")
 
 
 def get_compiled_css_path():
-    return join_path(ROOT, "css", "default.css")
+    return join_path(LIB_ROOT, "css", "default.css")
 
 
 def get_default_less_path():
-    return join_path(ROOT, "less", "default.less")
+    return join_path(LIB_ROOT, "less", "default.less")
 
 
 # 处理配置文件
@@ -241,21 +244,9 @@ def fix_tbl(html):  # 修正HTML表格左右留白问题
 
 
 # 装饰器：提供报错功能
-def report_error(func):
-    def wrapper(*args, **kwargs):
-        try:
-            result = func(*args, **kwargs)
-            return result
-        except Exception as e:
-            log("错误: {}".format(e))
-            input("提示：运行前请将所有要转换的Markdown文档放入temp目录中\n" "请按回车键退出程序：")
-
-    return wrapper
-
-
 # 用于处理嵌套目录
 def recursive_listdir(dir):
-    for root, _, files in os.walk(dir):
+    for root, _, files in os.walk(dir, followlinks=True):
         for file in files:
             yield (file, join_path(root, file))
 
@@ -280,21 +271,32 @@ def autoname(defaultpath):
             continue
 
 
-# 转换temp下的所有md文档
-# @report_error
-def convert_all(
-    src=join_path(ROOT, "temp"),
-    dst=join_path(ROOT, "result", "html"),
-    archive=None,
-    styles=None,
-):  # 通过styles参数传入css文件名列表时，默认样式将失效
+def map_do(fn, iterable, n=20):
+    with ThreadPoolExecutor(n) as executor:
+        results = executor.map(fn, iterable)
+        return results
+
+
+def convert_all(src=join_path(LIB_ROOT, "temp"), dst=None, archive=None, styles=None):
+    """
+    转换 src 下的所有md文档
+    通过styles参数传入css文件名列表时，默认样式将失效
+    """
+    dst = dst or join_path(src, '../result/html')
+
     config, styles = load_config_and_css(styles)
     if archive is None:
         archive = config["auto_archive"]
 
+    ps = []
     for file, filepath in recursive_listdir(src):
         if file.endswith(".md"):
-            convert_file(file, filepath, dst, config, styles, archive=archive)
+            # convert_file(file, filepath, dst, config, styles, archive=archive)
+            # mistune is not threadsafe
+            param = dict(
+                args=(file, filepath, dst, config, styles), kwargs=dict(archive=archive)
+            )
+            ps.append(param)
         else:
             if archive:
                 # 非.md文件统一移到src一级目录下等待手动删除，以防意外丢失
@@ -303,16 +305,21 @@ def convert_all(
             else:
                 continue
 
+    def fn(p):
+        convert_file(*p['args'], **p['kwargs'])
+
+    map_do(fn, ps)
+
     if archive:
         # 删除src中剩余的空目录
         for path in os.listdir(src):
             try:
                 shutil.rmtree(join_path(src, path))
-            except:
+            except Exception:
                 pass
 
-    log("\n[+] 请进入result／html查看所有生成的HTML文档")
-    log("[+] 请进入result／archive查看所有存档的MarkDown文档")
+    log(f"\n[+] 请进入{dst}查看所有生成的HTML文档")
+    log(f"[+] 请进入{dst}查看所有存档的MarkDown文档")
 
 
 def load_config_and_css(styles):
@@ -343,11 +350,16 @@ def convert_markdown(text, title, config, styles):
 
 def convert_file(file, filepath, dst, config, styles, archive=False, title=""):
     log("[+] 正在转换{}...".format(file), end=" ")
+    middle_path = os.path.dirname(os.path.relpath(filepath, ROOT)) if ROOT else None
+
     with open(filepath, encoding="utf-8") as md_file:
         text = md_file.read()
     result = convert_markdown(text, title or file[-3], config, styles)
 
-    htmlpath = join_path(dst, file[:-3] + ".html")
+    if middle_path:
+        htmlpath = join_path(dst, middle_path, file[:-3] + ".html")
+    else:
+        htmlpath = join_path(dst, file[:-3] + ".html")
     if config["auto_rename"]:
         htmlpath = autoname(htmlpath)
     prepare_dir(htmlpath)
@@ -357,7 +369,7 @@ def convert_file(file, filepath, dst, config, styles, archive=False, title=""):
 
     if archive:
         log("[+] 正在存档{}...".format(file), end=" ")
-        arch_dir = join_path(ROOT, "result", "archive")
+        arch_dir = join_path(LIB_ROOT, "result", "archive")
         if not os.path.exists(arch_dir):
             os.mkdir(arch_dir)
         archpath = join_path(arch_dir, file)
@@ -383,10 +395,12 @@ def main():
     )
     parser.add_argument("--stdout", action="store_true", help="print stdout")
     parser.add_argument(
-        "--src", default=join_path(ROOT, "temp"), help="source directory or file"
+        "--src", default=join_path(LIB_ROOT, "temp"), help="source directory or file"
     )
     parser.add_argument(
-        "--dst", default=join_path(ROOT, "result", "html"), help="destination directory"
+        "--dst",
+        default=join_path(LIB_ROOT, "result", "html"),
+        help="destination directory",
     )
     parser.add_argument("--styles", nargs="*", help="css file path")
     args = parser.parse_args()
