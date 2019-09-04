@@ -21,7 +21,7 @@ default_config = {
     "para_spacing": "1.5em",
     "list_padding_left": "2.5em",
     "text_color": "#555",
-    "theme_color": "#349971",
+    "theme_color": "#FF0066",
     "quote_color": "#999",
     "align": {
         "h1": "left",
