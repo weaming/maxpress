@@ -24,8 +24,8 @@
   "theme_color": "#FF0066",
   "quote_color": "#999",
   "align": {
-    "h1": "center",
-    "h2": "center",
+    "h1": "left",
+    "h2": "left",
     "h3": "left",
     "h4": "left",
     "h5": "left",

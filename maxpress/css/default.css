@@ -27,16 +27,16 @@ p {
 }
 strong,
 b {
- color: #349971;
+ color: #ff0066;
 }
 em,
 i {
- color: #349971;
+ color: #ff0066;
 }
 h1,
 h2 {
  font-weight: bold !important;
- color: #349971 !important;
+ color: #ff0066 !important;
  margin: 1.5em 3% !important;
 }
 h3,
@@ -44,7 +44,7 @@ h4,
 h5,
 h6 {
  font-weight: bold !important;
- color: #349971 !important;
+ color: #ff0066 !important;
  margin: 1.5em 3% !important;
 }
 h1 {
@@ -59,22 +59,22 @@ h2 {
 }
 h3 {
  font-size: 18px;
- text-align: center !important;
+ text-align: left !important;
 }
 h4 {
  font-size: 16px;
- text-align: center !important;
+ text-align: left !important;
 }
 h5 {
  font-size: 14px;
- text-align: center !important;
+ text-align: left !important;
 }
 h6 {
  font-size: 12px;
- text-align: center !important;
+ text-align: left !important;
 }
 hr {
- border-top: 2px solid #349971;
+ border-top: 2px solid #ff0066;
  margin: 3em 3%;
 }
 table,
@@ -202,8 +202,8 @@ table tr td {
 table tr th {
  font-weight: bold;
  color: #eeeeee;
- border: 1px solid #349971;
- background-color: #349971;
+ border: 1px solid #ff0066;
+ background-color: #ff0066;
 }
 dl {
  padding: 0;
@@ -218,7 +218,7 @@ dl dd {
  padding: 0 10px;
 }
 a {
- color: #349971;
+ color: #ff0066;
  text-decoration: none;
 }
 .highlight {
