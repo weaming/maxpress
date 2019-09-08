@@ -27,7 +27,7 @@ def get_version(path):
 long_description = read_text("README.md")
 install_requires = [
     l
-    for l in read_text("requirements.txt").split("\n")
+    for l in read_text("requirements.lock").split("\n")
     if l.strip() and not l.strip().startswith("#")
 ]
 
@@ -36,7 +36,7 @@ gh_repo = "https://github.com/weaming/{}".format(name)
 
 setup(
     name=name,  # Required
-    version="0.4.0",
+    version="0.4.1",
     # This is a one-line description or tagline of what your project does.
     description="convert markdown wechat html. 转换Markdown文章为公众号可粘贴的HTML格式.",  # Required
     long_description=long_description,  # Optional

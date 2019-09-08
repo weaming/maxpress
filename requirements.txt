@@ -4,3 +4,4 @@ lesscpy>=0.12.0
 Pygments==2.4.2
 emoji
 pangu
+mistletoe
