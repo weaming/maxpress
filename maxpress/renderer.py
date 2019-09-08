@@ -1,12 +1,12 @@
 from mistletoe import Document
 
-from mistletoe_contrib.emoji_renderer import EmojiRenderer
+from mistletoe_contrib.text_renderer import TextRenderer
 from mistletoe_contrib.mathjax import MathJaxRenderer
 from mistletoe_contrib.pygments_renderer import PygmentsRenderer
 from mistletoe_contrib.toc_renderer import TOCRenderer
 
 
-class MixRender(EmojiRenderer, MathJaxRenderer, PygmentsRenderer, TOCRenderer):
+class MixRender(TOCRenderer, PygmentsRenderer, MathJaxRenderer, TextRenderer):
     pass
 
 

@@ -61,7 +61,6 @@ mistune 引擎退役，仅使用 mistletoe 引擎。
   * `$HOME/.config/maxpress/styles.less`
   * `--styless`: 可传入多个，这时`config.json`中用于定义样式的参数将会失效，`custom.css`将在你的全部自定义样式表之后引入
 * 如果你希望覆盖默认样式中的个别样式，可以自主编写`custom.css`，它将在`default.css`之后被引入。
-  * `<libroot>/maxpress/css/custom.css`
   * `$HOME/.config/maxpress/custom.css`
 * 自定义高亮 CSS
   * [`HIGHLIGHT_CSS_NAME`](https://github.com/richleland/pygments-css)，默认 `autumn`

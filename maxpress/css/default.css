@@ -4,7 +4,7 @@
  color: #555555;
  margin: auto 20%;
  text-align: justify;
- font-family: "Roboto", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+ font-family: "helvetica neue", "luxi sans", "dejavu sans", Tahoma, "hiragino sans gb", "microsoft yahei", sans-serif;
 }
 p,
 ul,
@@ -222,7 +222,6 @@ a {
  text-decoration: none;
 }
 .highlight {
- margin: 1.5em 3% !important;
  line-height: 1.8em;
  font-size: 14px !important;
  color: #999999;

@@ -5,10 +5,11 @@ import os, re, json, shutil
 from concurrent.futures import ProcessPoolExecutor
 from os.path import join as join_path
 
+import premailer
+import requests
 from six import StringIO
-import premailer, lesscpy
+import lesscpy
 from maxpress.renderer import mistletoe_parse
-
 
 LIB_ROOT = os.getenv("LIB_ROOT") or os.path.dirname(os.path.abspath(__file__))
 # md 根目录
@@ -50,7 +51,6 @@ default_config = {
     "banner_url": "",
     "poster_url": "",
     "convert_list": True,
-    "ul_style": "○",
     "auto_archive": False,
     "auto_rename": False,
 }
@@ -89,19 +89,18 @@ def get_styles_less():
     return embedded
 
 
+def get_default_less_path():
+    return join_path(LIB_ROOT, "less", "default.less")
+
+
 def get_custom_css_path():
     css = os.path.expandvars("$HOME/.config/maxpress/custom.css")
     if os.path.isfile(css):
         return css
-    return join_path(LIB_ROOT, "css", "custom.css")
 
 
 def get_compiled_css_path():
     return join_path(LIB_ROOT, "css", "default.css")
-
-
-def get_default_less_path():
-    return join_path(LIB_ROOT, "less", "default.less")
 
 
 # 处理配置文件
@@ -115,7 +114,6 @@ def import_config(file=config_path):
         "poster_url",
         "banner_url",
         "convert_list",
-        "ul_style",
         "auto_archive",
         "auto_rename",
     ]
@@ -153,25 +151,34 @@ def compile_styles(file=get_default_less_path()):
         css_file.write(css)
 
 
+def embed_css(html):
+    import bs4
+
+    soup = bs4.BeautifulSoup(html, features='lxml')
+    stylesheets = soup.findAll("link", {"rel": "stylesheet"})
+    for s in stylesheets:
+        href = s["href"]
+        t = soup.new_tag("style")
+        if href:
+            if os.path.isfile(href):
+                css = open(href).read()
+            else:
+                css = requests.get(href).text
+            c = bs4.element.NavigableString(css)
+            t.insert(0, c)
+            t["type"] = "text/css"
+            s.replaceWith(t)
+    return str(soup)
+
+
 # 将待解析的md文档转换为适合微信编辑器的html
-def md2html(
-    text,
-    title="",
-    styles=None,
-    poster="",
-    banner="",
-    convert_list=True,
-    ul_style="\u25CB",
-):
+def md2html(text, title="", styles=None, poster="", banner="", convert_list=True):
     # 将markdown列表转化为带序号的普通段落（纯为适应微信中列表序号样式自动丢失的古怪现象）
     if convert_list:
         blocks = text.split("\n```")
         for i in range(0, len(blocks)):
             if i % 2 == 0:
                 blocks[i] = re.sub(r"(\n\d+)(\.\s.*?)", r"\n\1\\\2", blocks[i])
-                blocks[i] = re.sub(
-                    r"\n[\-\+\*](\s.*?)", "\n\n{} \1".format(ul_style), blocks[i]
-                )
             else:
                 continue  # 跳过代码块内部内容
         text = "\n```".join(blocks)
@@ -179,16 +186,32 @@ def md2html(
     MD_PARSER = "mistletoe"
     MD = export[MD_PARSER]
     inner_html = MD(text)
-    result = premailer.transform(pack_html(inner_html, title, styles, poster, banner))
+    if os.getenv("DEBUG"):
+        with open("1.html", "w") as f:
+            f.write(inner_html)
+    packed = pack_html(inner_html, title, styles, poster, banner)
+    if os.getenv("DEBUG"):
+        with open("2.html", "w") as f:
+            f.write(packed)
+    # return packed
+    result = premailer.transform(packed)
+    # result = embed_css(packed)
+    if os.getenv("DEBUG"):
+        with open("3.html", "w") as f:
+            f.write(result)
     return result
 
 
 def pack_html(html, title="", styles=None, poster="", banner=""):
     if not styles:
         styles = [get_compiled_css_path(), highlight_css]
-    styles.append(get_custom_css_path())
+    custom_css = get_custom_css_path()
+    if custom_css:
+        styles.append(custom_css)
+    # log('styles', styles, end='  ')
+
     style_tags = [
-        '<link rel="stylesheet" type="text/css" href="{}">'.format(sheet)
+        '<link rel="stylesheet" type="text/css" href="{}"/>'.format(sheet)
         for sheet in styles
     ]
 
@@ -215,17 +238,24 @@ def pack_html(html, title="", styles=None, poster="", banner=""):
     )
 
     foot = """{}\n</div>\n</body>\n</html>""".format(poster_tag)
+    html = head + html + foot
 
-    result = fix_tbl(fix_img(fix_li(head + html + foot)))
+    result = fix_tbl(fix_img(fix_li(html)))
     return result
 
 
-def fix_li(html):  # 修正粘贴到微信编辑器时列表格式丢失的问题
-    result = re.sub(r"<li>([\s\S]*?)</li>", r"<li><span>\1</span></li>", html)
+def fix_li(html):
+    """
+    修正粘贴到微信编辑器时列表格式丢失的问题
+    """
+    result = re.sub(r"<li>(.*?)</li>", r"<li><span>\1</span></li>", html, flags=re.MULTILINE)
     return result
 
 
-def fix_img(html):  # 修正HTML图片大小自适应问题
+def fix_img(html):
+    """
+    修正HTML图片大小自适应问题
+    """
     result = re.sub(
         r"(<p>)*?<img([\s\S]*?)>(</p>)*?",
         r'<section class="img-wrapper"><img\2></section>',
@@ -234,7 +264,10 @@ def fix_img(html):  # 修正HTML图片大小自适应问题
     return result
 
 
-def fix_tbl(html):  # 修正HTML表格左右留白问题
+def fix_tbl(html):
+    """
+    修正HTML表格左右留白问题
+    """
     result = re.sub(
         r"<table>([\s\S]*?)</table>",
         r'<section class="tbl-wrapper"><table>\1</table></section>',
@@ -346,7 +379,6 @@ def convert_markdown(text, title, config, styles):
         poster=config["poster_url"],
         banner=config["banner_url"],
         convert_list=config["convert_list"],
-        ul_style=config["ul_style"],
     )
 
 
