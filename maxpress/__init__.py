@@ -7,13 +7,28 @@ from os.path import join as join_path
 
 from six import StringIO
 import premailer, lesscpy
-from .renderer import markdown
+from maxpress.renderer import mistletoe_parse
 
 
 LIB_ROOT = os.getenv("LIB_ROOT") or os.path.dirname(os.path.abspath(__file__))
 # md 根目录
 ROOT = os.getenv("ROOT")
 config_path = os.path.expandvars("$HOME/.config/maxpress/config.json")
+_ = """
+自定义基本参数：
+  main_size: 正文主字号
+  main_margin: 内容两侧留白比例
+  line_height: 正文行高
+  para_spacing: 正文段间距
+  title_align: 标题水平对齐方式，建议left或center（仅支持h3-h6，h1、h2固定使用左对齐）
+  text_color: 正文文字颜色
+  theme_color: 主题色，用于标题、强调元素等文字颜色
+  quote_color: 引用框和代码框内文字颜色
+  banner_url: 文章头部引导关注图片的url，如"http://placeholder.qiniudn.com/900x100"
+  poster_url: 文章底部图片的url，通常是二维码或宣传海报，如"http://placeholder.qiniudn.com/900x600"
+  auto_archive: 是否自动存档（转换后将原始`.md`文件移动至`result／archive`目录下）
+  auto_rename: 如何处理冲突的文件名，true - 自动重命名；false - 覆盖先前的文件
+"""
 default_config = {
     "main_size": "16px",
     "main_margin": "3%",
@@ -39,7 +54,7 @@ default_config = {
     "auto_archive": False,
     "auto_rename": False,
 }
-export = {"markdown": markdown}
+export = {"mistletoe": mistletoe_parse}
 
 
 def prepare_dir(path):
@@ -138,21 +153,6 @@ def compile_styles(file=get_default_less_path()):
         css_file.write(css)
 
 
-def patch_mistune(MD):
-    MD.block.default_rules = sorted(
-        MD.block.default_rules,
-        key=lambda x: -1 if x == "list_block" else MD.block.default_rules.index(x),
-    )
-    MD.block.list_rules = sorted(
-        MD.block.list_rules,
-        key=lambda x: -1 if x == "list_block" else MD.block.list_rules.index(x),
-    )
-    MD.block.footnote_rules = sorted(
-        MD.block.footnote_rules,
-        key=lambda x: -1 if x == "list_block" else MD.block.footnote_rules.index(x),
-    )
-
-
 # 将待解析的md文档转换为适合微信编辑器的html
 def md2html(
     text,
@@ -170,14 +170,14 @@ def md2html(
             if i % 2 == 0:
                 blocks[i] = re.sub(r"(\n\d+)(\.\s.*?)", r"\n\1\\\2", blocks[i])
                 blocks[i] = re.sub(
-                    r"\n[\-\+\*](\s.*?)", u"\n\n{} \1".format(ul_style), blocks[i]
+                    r"\n[\-\+\*](\s.*?)", "\n\n{} \1".format(ul_style), blocks[i]
                 )
             else:
                 continue  # 跳过代码块内部内容
         text = "\n```".join(blocks)
 
-    MD = export["markdown"]
-    patch_mistune(MD)
+    MD_PARSER = "mistletoe"
+    MD = export[MD_PARSER]
     inner_html = MD(text)
     result = premailer.transform(pack_html(inner_html, title, styles, poster, banner))
     return result
@@ -278,7 +278,7 @@ def map_do(fn, iterable, n=20):
 
 
 def _map_fn_wrapper(p):
-    convert_file(*p['args'], **p['kwargs'])
+    convert_file(*p["args"], **p["kwargs"])
 
 
 def convert_all(src=join_path(LIB_ROOT, "temp"), dst=None, archive=None, styles=None):
@@ -286,7 +286,7 @@ def convert_all(src=join_path(LIB_ROOT, "temp"), dst=None, archive=None, styles=
     转换 src 下的所有md文档
     通过styles参数传入css文件名列表时，默认样式将失效
     """
-    dst = dst or join_path(src, '../result/html')
+    dst = dst or join_path(src, "../result/html")
 
     config, styles = load_config_and_css(styles)
     if archive is None:
@@ -296,7 +296,7 @@ def convert_all(src=join_path(LIB_ROOT, "temp"), dst=None, archive=None, styles=
     for file, filepath in recursive_listdir(src):
         if file.endswith(".md"):
             # convert_file(file, filepath, dst, config, styles, archive=archive)
-            # mistune is not threadsafe
+            # renderer is not threadsafe
             param = dict(
                 args=(file, filepath, dst, config, styles),
                 kwargs=dict(archive=archive, title=file[:-3]),
