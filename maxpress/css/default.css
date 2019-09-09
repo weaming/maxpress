@@ -74,6 +74,7 @@ h6 {
  text-align: left !important;
 }
 hr {
+ border: 0;
  border-top: 2px solid #ff0066;
  margin: 3em 3%;
 }
