@@ -225,16 +225,22 @@ def pack_html(html, title="", styles=None, poster="", banner=""):
     else:
         banner_tag = ""
 
+    icon = os.getenv("ICON_URL")
+    if icon:
+        icon_tag = f'<link rel="shortcut icon" href="{icon}">'
+    else:
+        icon_tag = ''
     head = """<!DOCTYPE html><html lang="zh-cn">
           <head>
           <meta charset="UTF-8">
           <title>{title}</title>
+          {icon_tag}
           {styles}
           </head>
           <body>
           <div class="wrapper">
           {banner}\n""".format(
-        styles="\n".join(style_tags), banner=banner_tag, title=title
+        styles="\n".join(style_tags), banner=banner_tag, title=title, icon_tag=icon_tag
     )
 
     foot = """{}\n</div>\n</body>\n</html>""".format(poster_tag)

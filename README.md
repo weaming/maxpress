@@ -64,6 +64,8 @@ mistune 引擎退役，仅使用 mistletoe 引擎。
 * 自定义高亮 CSS
   * [`HIGHLIGHT_CSS_NAME`](https://bitbucket.org/birkenfeld/pygments-main/src/default/pygments/styles/)，默认 `autumn`
   * `HIGHLIGHT_CSS_URL` 将叠加在上面 `HIGHLIGHT_CSS_NAME`
+* 自定义 icon
+  * `ICON_URL`
 
 
 ## 开发环境
