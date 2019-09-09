@@ -62,8 +62,8 @@ mistune 引擎退役，仅使用 mistletoe 引擎。
 * 如果你希望覆盖默认样式中的个别样式，可以自主编写`custom.css`，它将在`default.css`之后被引入。
   * `$HOME/.config/maxpress/custom.css`
 * 自定义高亮 CSS
-  * [`HIGHLIGHT_CSS_NAME`](https://github.com/richleland/pygments-css)，默认 `autumn`
-  * `HIGHLIGHT_CSS_URL` 将覆盖上面 `HIGHLIGHT_CSS_NAME` 的配置
+  * [`HIGHLIGHT_CSS_NAME`](https://bitbucket.org/birkenfeld/pygments-main/src/default/pygments/styles/)，默认 `autumn`
+  * `HIGHLIGHT_CSS_URL` 将叠加在上面 `HIGHLIGHT_CSS_NAME`
 
 
 ## 开发环境

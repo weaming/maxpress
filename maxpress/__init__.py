@@ -76,9 +76,7 @@ def log(*args, **kw):
     print(*args, file=sys.stderr, **kw)
 
 
-highlight_css_name = os.getenv("HIGHLIGHT_CSS_NAME", "autumn")
-default_highlight_css = f"https://raw.githubusercontent.com/richleland/pygments-css/master/{highlight_css_name}.css"
-highlight_css = os.getenv("HIGHLIGHT_CSS_URL") or default_highlight_css
+highlight_css = os.getenv("HIGHLIGHT_CSS_URL")
 
 
 def get_styles_less():
@@ -204,7 +202,9 @@ def md2html(text, title="", styles=None, poster="", banner="", convert_list=True
 
 def pack_html(html, title="", styles=None, poster="", banner=""):
     if not styles:
-        styles = [get_compiled_css_path(), highlight_css]
+        styles = [get_compiled_css_path()]
+    if highlight_css:
+        styles.append(highlight_css)
     custom_css = get_custom_css_path()
     if custom_css:
         styles.append(custom_css)
@@ -248,7 +248,9 @@ def fix_li(html):
     """
     修正粘贴到微信编辑器时列表格式丢失的问题
     """
-    result = re.sub(r"<li>(.*?)</li>", r"<li><span>\1</span></li>", html, flags=re.MULTILINE)
+    result = re.sub(
+        r"<li>(.*?)</li>", r"<li><span>\1</span></li>", html, flags=re.MULTILINE
+    )
     return result
 
 
