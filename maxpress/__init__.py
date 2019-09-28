@@ -31,14 +31,15 @@ _ = """
   auto_rename: 如何处理冲突的文件名，true - 自动重命名；false - 覆盖先前的文件
   border_color: 边框颜色
 """
+# https://www.color-hex.com/color-palette/83148
 default_config = {
     "main_size": "16px",
     "main_margin": "3%",
     "line_height": "1.8em",
     "para_spacing": "1.5em",
-    "list_padding_left": "2.5em",
+    "list_padding_left": "1.5em",
     "text_color": "#555",
-    "theme_color": "#FF0066",
+    "theme_color": "#f06",
     "quote_color": "#999",
     "border_color": "#ccc",
     "align": {

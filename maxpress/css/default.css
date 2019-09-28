@@ -76,7 +76,7 @@ h6 {
 }
 hr {
  border: 0;
- border-top: 2px solid #ff0066;
+ border-top: 1px solid #ff0066;
  margin: 3em 3%;
 }
 table,
@@ -89,7 +89,7 @@ ol {
 }
 ul,
 ol {
- padding-left: 2.5em;
+ padding-left: 1.5em;
  font-size: 16px;
 }
 ul {
@@ -116,7 +116,7 @@ ol ol {
 }
 blockquote,
 q {
- border: 2px dotted #cccccc;
+ border: 1px dotted #cccccc;
  border-radius: 0.7em;
  padding: 0 10px;
  color: #999999;
@@ -132,7 +132,7 @@ q::after {
 pre,
 code {
  font-size: 14px !important;
- color: #ff0066;
+ color: #999999;
 }
 pre {
  line-height: 1.7em;
