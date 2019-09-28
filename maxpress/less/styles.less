@@ -6,7 +6,8 @@
   font-size: @main_size;
   letter-spacing: 0.05em;
   color: @text_color;
-  margin: auto 20%;
+  margin: 0 auto;
+  width: 980px;
   text-align: justify;
   font-family: "helvetica neue", "luxi sans", "dejavu sans", Tahoma, "hiragino sans gb", "microsoft yahei", sans-serif;
 }
@@ -46,13 +47,13 @@ h3, h4, h5, h6 {
 
 h1 {
   font-size: @main_size + 8px !important;
-  border-bottom: 1px solid #ddd !important;
+  border-bottom: 1px solid @theme_color !important;
   text-align: @h1_align !important;
 }
 
 h2 {
   font-size: @main_size + 4px !important;
-  border-bottom: 1px solid #eee !important;
+  border-bottom: 1px solid @theme_color !important;
   text-align: @h2_align !important;
 }
 
@@ -114,7 +115,7 @@ ul ul, ul ol, ol ul, ol ol {
 }
 
 blockquote, q {
-  border: 2px dotted #ddd;
+  border: 2px dotted @border_color;
   border-radius: 0.7em;
   padding: 0 10px;
   color: @quote_color;
@@ -128,7 +129,7 @@ blockquote::before, blockquote::after, q::before, q::after {
 
 pre, code {
   font-size: @main_size - 2px !important;
-  color: @quote_color;
+  color: @theme_color;
 }
 
 pre {
@@ -139,9 +140,11 @@ pre {
 
 code {
   white-space: pre-wrap;
-  padding: 3px;
-  border: 1px solid #ddd;
+  border: 1px solid @border_color;
   border-radius: 3px;
+  padding: 3px;
+  margin-left: 3px;
+  margin-right: 3px;
   display: inline;
 }
 
@@ -149,7 +152,7 @@ pre code {
   white-space: pre;
   overflow: auto;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid @border_color;
   border-radius: 3px;
   display: block !important;
   margin: auto @main_margin !important;
@@ -245,7 +248,7 @@ a {
   white-space: pre;
   overflow: auto;
   padding: 3px 8px;
-  border: 1px solid #ddd;
+  border: 1px solid @border_color;
   border-radius: 3px;
   display: block !important;
   margin: auto @main_margin !important;

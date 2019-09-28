@@ -29,6 +29,7 @@ _ = """
   poster_url: 文章底部图片的url，通常是二维码或宣传海报，如"http://placeholder.qiniudn.com/900x600"
   auto_archive: 是否自动存档（转换后将原始`.md`文件移动至`result／archive`目录下）
   auto_rename: 如何处理冲突的文件名，true - 自动重命名；false - 覆盖先前的文件
+  border_color: 边框颜色
 """
 default_config = {
     "main_size": "16px",
@@ -39,6 +40,7 @@ default_config = {
     "text_color": "#555",
     "theme_color": "#FF0066",
     "quote_color": "#999",
+    "border_color": "#ccc",
     "align": {
         "h1": "left",
         "h2": "left",

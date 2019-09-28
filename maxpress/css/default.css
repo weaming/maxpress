@@ -2,7 +2,8 @@
  font-size: 16px;
  letter-spacing: 0.05em;
  color: #555555;
- margin: auto 20%;
+ margin: 0 auto;
+ width: 980px;
  text-align: justify;
  font-family: "helvetica neue", "luxi sans", "dejavu sans", Tahoma, "hiragino sans gb", "microsoft yahei", sans-serif;
 }
@@ -49,12 +50,12 @@ h6 {
 }
 h1 {
  font-size: 24px !important;
- border-bottom: 1px solid #dddddd !important;
+ border-bottom: 1px solid #ff0066 !important;
  text-align: left !important;
 }
 h2 {
  font-size: 20px !important;
- border-bottom: 1px solid #eeeeee !important;
+ border-bottom: 1px solid #ff0066 !important;
  text-align: left !important;
 }
 h3 {
@@ -115,7 +116,7 @@ ol ol {
 }
 blockquote,
 q {
- border: 2px dotted #dddddd;
+ border: 2px dotted #cccccc;
  border-radius: 0.7em;
  padding: 0 10px;
  color: #999999;
@@ -131,7 +132,7 @@ q::after {
 pre,
 code {
  font-size: 14px !important;
- color: #999999;
+ color: #ff0066;
 }
 pre {
  line-height: 1.7em;
@@ -140,16 +141,18 @@ pre {
 }
 code {
  white-space: pre-wrap;
- padding: 3px;
- border: 1px solid #dddddd;
+ border: 1px solid #cccccc;
  border-radius: 3px;
+ padding: 3px;
+ margin-left: 3px;
+ margin-right: 3px;
  display: inline;
 }
 pre code {
  white-space: pre;
  overflow: auto;
  padding: 8px;
- border: 1px solid #dddddd;
+ border: 1px solid #cccccc;
  border-radius: 3px;
  display: block !important;
  margin: auto 3% !important;
@@ -229,7 +232,7 @@ a {
  white-space: pre;
  overflow: auto;
  padding: 3px 8px;
- border: 1px solid #dddddd;
+ border: 1px solid #cccccc;
  border-radius: 3px;
  display: block !important;
  margin: auto 3% !important;
