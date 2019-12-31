@@ -34,7 +34,6 @@
 // 运行时程序将根据本文件中定义的格式自动生成default.less
 // 如需通过less自定义样式，请在本文件中修改
 
-
 .wrapper {
   font-size: @main_size;
   letter-spacing: 0.05em;
@@ -42,14 +41,27 @@
   margin: 0 auto;
   width: 980px;
   text-align: justify;
-  font-family: "helvetica neue", "luxi sans", "dejavu sans", Tahoma, "hiragino sans gb", "microsoft yahei", sans-serif;
+  font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI',
+    'helvetica neue', 'luxi sans', 'dejavu sans', Tahoma, 'hiragino sans gb',
+    'microsoft yahei', Arial, sans-serif, 'Apple Color Emoji', 'EmojiOne',
+    'Noto Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 }
 
-p, ul, ol, blockquote, q, pre, code {
+p,
+ul,
+ol,
+blockquote,
+q,
+pre,
+code {
   line-height: @line_height;
 }
 
-p, ul, ol, blockquote, q {
+p,
+ul,
+ol,
+blockquote,
+q {
   text-align: @content_align;
 }
 
@@ -57,22 +69,27 @@ p {
   margin: @para_spacing @main_margin !important;
 }
 
-strong, b {
+strong,
+b {
   color: @theme_color;
 }
 
-em, i {
+em,
+i {
   color: @theme_color;
 }
 
-h1, h2 {
+h1,
+h2 {
   font-weight: bold !important;
   color: @theme_color !important;
   margin: @para_spacing @main_margin !important;
 }
 
-
-h3, h4, h5, h6 {
+h3,
+h4,
+h5,
+h6 {
   font-weight: bold !important;
   color: @theme_color !important;
   margin: @para_spacing @main_margin !important;
@@ -116,11 +133,17 @@ hr {
   margin: @para_spacing * 2 @main_margin;
 }
 
-table, dl, blockquote, q, ul, ol {
+table,
+dl,
+blockquote,
+q,
+ul,
+ol {
   margin: @para_spacing @main_margin;
 }
 
-ul, ol {
+ul,
+ol {
   padding-left: @list_padding_left;
   font-size: @main_size;
 }
@@ -135,19 +158,24 @@ li {
   color: @text_color + #000001;
 }
 
-li span, li p {
+li span,
+li p {
   margin: @para_spacing * 0.5 0;
   font-size: @main_size - 2px;
   color: @text_color + #000002;
   letter-spacing: 0.05em;
 }
 
-ul ul, ul ol, ol ul, ol ol {
+ul ul,
+ul ol,
+ol ul,
+ol ol {
   margin: 0;
   padding-left: 1em;
 }
 
-blockquote, q {
+blockquote,
+q {
   border: 1px dotted @border_color;
   border-radius: 0.7em;
   padding: 0 10px;
@@ -156,11 +184,15 @@ blockquote, q {
   margin: auto @main_margin;
 }
 
-blockquote::before, blockquote::after, q::before, q::after {
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
   content: none;
 }
 
-pre, code {
+pre,
+code {
   font-size: @main_size - 2px !important;
   color: @quote_color;
 }
@@ -228,19 +260,20 @@ tbody {
 
 table tr {
   border: 0;
-  border-top: 1px solid #CCC;
+  border-top: 1px solid #ccc;
   background-color: white;
   margin: 0;
   padding: 0;
 }
 
 table tr:nth-child(2n) {
-  background-color: #F8F8F8;
+  background-color: #f8f8f8;
 }
 
-table tr th, table tr td {
+table tr th,
+table tr td {
   font-size: 14px;
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
   margin: 0;
   padding: 5px 10px;
 }
@@ -289,5 +322,5 @@ a {
 }
 
 .highlight > pre {
-  margin: 0
+  margin: 0;
 }

@@ -5,7 +5,7 @@
  margin: 0 auto;
  width: 980px;
  text-align: justify;
- font-family: "helvetica neue", "luxi sans", "dejavu sans", Tahoma, "hiragino sans gb", "microsoft yahei", sans-serif;
+ font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'helvetica neue', 'luxi sans', 'dejavu sans', Tahoma, 'hiragino sans gb', 'microsoft yahei', Arial, sans-serif, 'Apple Color Emoji', 'EmojiOne', 'Noto Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 }
 p,
 ul,
