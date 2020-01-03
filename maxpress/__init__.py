@@ -14,6 +14,7 @@ from maxpress.renderer import mistletoe_parse
 LIB_ROOT = os.getenv("LIB_ROOT") or os.path.dirname(os.path.abspath(__file__))
 # md 根目录
 ROOT = os.getenv("ROOT")
+DEBUG = bool(os.getenv("DEBUG"))
 config_path = os.path.expandvars("$HOME/.config/maxpress/config.json")
 _ = """
 自定义基本参数：
@@ -187,17 +188,17 @@ def md2html(text, title="", styles=None, poster="", banner="", convert_list=True
     MD_PARSER = "mistletoe"
     MD = export[MD_PARSER]
     inner_html = MD(text)
-    if os.getenv("DEBUG"):
+    if DEBUG:
         with open("1.html", "w") as f:
             f.write(inner_html)
     packed = pack_html(inner_html, title, styles, poster, banner)
-    if os.getenv("DEBUG"):
+    if DEBUG:
         with open("2.html", "w") as f:
             f.write(packed)
     # return packed
     result = premailer.transform(packed)
     # result = embed_css(packed)
-    if os.getenv("DEBUG"):
+    if DEBUG:
         with open("3.html", "w") as f:
             f.write(result)
     return result

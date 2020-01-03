@@ -17,7 +17,11 @@ class MixRender(TOCRenderer, PygmentsRenderer, MathJaxRenderer, TextRenderer):
             title = ' title="{}"'.format(self.escape_html(token.title))
         else:
             title = ''
-        if HOSTNAME and HOSTNAME.lower() not in token.target:
+        if (
+            HOSTNAME
+            and token.target.startswith('http')
+            and HOSTNAME.lower() not in token.target
+        ):
             target = ' target="_blank"'
         else:
             target = ''
